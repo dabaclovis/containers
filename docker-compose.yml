@@ -1,0 +1,52 @@
+---
+version: '3.8'
+networks:
+  applicas:
+services:
+  #server
+  server:
+    container_name: server 
+    networks:
+      - applicas
+    build:
+      context: .
+      dockerfile: Dockerfile
+    tty: true  
+    ports:
+      - 8080:8080
+      - 443:443
+    volumes:
+      - ~/application:/var/www/application 
+  #mysql
+  database:
+    container_name: mysql 
+    image: mysql:8.0 
+    volumes:
+      - dbdata:/var/lib/mysql
+    tty: true 
+    networks:
+      - applicas
+    ports:
+      - 3306:3306 
+    environment:
+      - MYSQL_DATABASE=cameroon
+      - MYSQL_USERNAME=root
+      - MYSQL_ROOT_PASSWORD=clovis12
+      - MYSQL_PASSWORD=clovis12
+  #phpadmin
+  phpmyadmin:
+    image: phpmyadmin
+    container_name: myadmin
+    restart: always
+    networks:
+      - applicas 
+    tty: true 
+    ports:
+      - 9000:80
+    environment:
+      - PMA_ARBITRARY=1
+      - PMA_HOST=mysql 
+volumes:
+  dbdata: ~
+
+...
